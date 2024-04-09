@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wp 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: mysqldeployment
+    namespace: wp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      db: mysql
+  template:
+    metadata:
+      name: mysqlpod
+      labels: 
+        db: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: password 
+            - name: MYSQL_DATABASE
+              value: wordpress_test
+          ports:
+            - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: mysql
+    namespace: wp
+spec:
+  type: ClusterIP
+  ports: 
+   - protocol: TCP
+     port: 3306
+     targetPort: 3306
+  selector:
+    db: mysql
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: wpdeployment
+    namespace: wp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wordpress
+  template:
+    metadata:
+      name: wppod
+      labels: 
+        app: wordpress
+    spec:
+      containers:
+        - name: wordpress
+          image: bhardwaj2803/wp:lts
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: wp-config-volume
+              mountPath: /var/www/html/wordpress/wp-config.php
+              subPath: wp-config.php
+      volumes:
+        - name: wp-config-volume
+          secret:
+            secretName: wp-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: wp
+    namespace: wp
+spec:
+  type: ClusterIP
+  ports: 
+   - protocol: TCP
+     port: 80
+     targetPort: 80
+  selector:
+    app: wordpress
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: wp-nodeport
+    namespace: wp
+spec:
+  type: NodePort
+  ports: 
+   - nodePort: 32001
+     port: 80
+     targetPort: 80
+  selector:
+    app: wordpress

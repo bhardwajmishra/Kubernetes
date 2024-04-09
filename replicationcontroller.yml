@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: replicationcont12 
+  labels:
+    appname: test
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: leb1
+      labels: 
+       type: app
+    spec:
+      containers:
+        - image: nginx
+          name: servicecont1
+

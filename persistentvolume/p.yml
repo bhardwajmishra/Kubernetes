@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: firstpod
+  labels:
+    app: default
+    type: frontend
+
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+         - matchExpressions:
+              - key: az
+                operator: In
+                values:
+                  - a
+        
+  containers:
+    - name: nginx
+      image: nginx
+      ports:
+      - containerPort: 80
+      volumeMounts:
+         - mountPath: "/data"
+           name: ebs-vol
+
+  volumes:
+    - name: ebs-vol
+      persistentVolumeClaim:
+        claimName: pvc01
