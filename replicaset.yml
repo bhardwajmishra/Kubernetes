@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: firstrs
+  labels:
+    name: replicaset
+
+spec:
+  replicas: 3
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - bhardwaj
+          - mishra
+  template: 
+    metadata:
+      name: pod
+      labels:
+        app: bhardwaj
+    spec:
+      containers:
+       - name: testcont
+         image: nginx

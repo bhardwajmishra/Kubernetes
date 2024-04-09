@@ -1,0 +1,60 @@
+---
+aiVersion: v1
+kind: Namespace
+metadata:
+  name: bhardwajns
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: bhardwajns
+  name: firstdeployment
+  labels:
+    name: firstdeploy
+
+spec:
+  replicas: 2
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - bhardwaj
+  template: 
+    metadata:
+      name: pod
+      labels:
+        app: bhardwaj
+    spec:
+      containers:
+       - name: testcont
+         image: bhardwaj2803/k8s:bhardwaj
+         ports:
+         - containerPort: 443
+         - containerPort: 80
+         resources:
+           requests:
+             memory: 200M
+           limits:
+             memory: 500M
+---
+#apiVersion: v1
+#kind: Service
+#metadata:
+# namespace: bhardwajns
+# name: deploymentnodeportservice
+#spec:
+# ports:
+#   - name: test80
+#     port: 80
+#     targetPort: 80
+#     protocol: TCP
+#   - name: test12
+#     port: 443
+#     targetPort: 443
+#     protocol: TCP
+       # type: NodePort
+   #selector:
+   #   app: bhardwaj
+
